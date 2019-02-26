@@ -1,0 +1,366 @@
+This archive file contains a number of files for Lab 5.
+Suggestions for 	COS 285 Lab Recursing on Regular Expressions
+
+Always with recursion the paradigm for an operation f defined on a inductively
+defined set IDS
+
+f : IDS --> Whatever
+
+for x in IDS
+
+f(x) =  if x is a base case then
+           calculate and return f(x) w/o recursion
+        else{
+           break up x into its constituent components in RDS, x1, ..., xm
+           allow yourself the recursive calls
+           Whatever y1, ..., ym;
+
+           y1 = f(x1);
+           ...
+           ym = f(xm);
+           calculate and return f(x) for the original x from y1, ..., ym
+           and any other parts of x and sometimes even x itself;
+        }
+
+You get to assume the recursive calls work correctly.  With an inductively
+defined set, the breakup of x is given by the way the set is defined, and
+the base case values are usually more or less straightforward, so the
+critical piece is how to combine the results correctly to give the right
+value for the original x; that is the creative part.  It is important to see
+how the definition of the IDS does provide a template for recursive
+function definition.
+
+Our regular expressions are defined to have base cases
+
+1. 0 for the empty set
+2. each x from { a, b, ..., z }, the set of lower case letters, and each x
+   represents the language that contains a single string of length one,
+   x itself as a string
+3. the period, ., standing for the set of twenty-six length one strings,
+   { "a", ..., "z" }, which could be represented by (a|b|... |y|z)
+
+
+and five constructors.  For regular expressions S and T
+
+1. (S|T) for the union of their two languages
+2. (S X T) for the language product   (we use X here instead of juxtaposition
+   to make it visible as an operatorion; it was our label in the expression
+   trees)
+3. (S?) for the strings that are either in S or are in the empty string.
+4. (S+) for the strings that can be composed by selecting n > 0 strings from
+   S, with replacement, and concatenatring them.
+5. (S*) for representing the strings that are either empty or are in S+
+
+We used classes
+
+
+RETreeNode.java         an abstract superclass for the next three
+RELeafTreeNode.java     for the base cases
+REUopTreeNode.java      for the last three constructors
+REBopTreeNode.java      for the first two constructors
+RegularExpression.java  for the regular expression tree as a whole as
+                        opposed; this class just contains a data member
+                        for the root of the tree.
+
+The only files you actually have to modify are
+
+RELeafTreeNode.java
+REUopTreeNode.java
+REBopTreeNode.java
+
+
+You are asked to replace with correct code the stub code that is in them now
+for the methods
+
+   public boolean isEmpty(): returns true exactly when the language
+                             represented by this has no strings in it
+
+   public RETreeNode reversedLanguage() : returns a regular expression
+                                          to represent the language that is
+                                          the reversal of all the strings in
+                                          the language represented by this
+
+   public RETreeNode prefixLanguage(): returns a regular expression
+                                       to represent the language that contains
+                                       the prefixes of all the strings in
+                                       the language represented by this
+
+   public RETreeNode suffixLanguage(): returns a regular expression
+                                       to represent the language that contains
+                                       the suffixes of all the strings in
+                                       the language represented by this
+
+
+You should accomplish this using recursion.
+
+
+We discuss each method in turn.  We will only discuss the solutions for
+single letters sigma, and the X(we will use X for language concatenation), |,
+and * operators.   You may infer how to adapt them to the . base case and the ?
+and + operators using the identities
+
+L+ = L X (L*)
+L? = (0*|L)
+. = a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z
+
+You can directly apply your solutions for the others, but there are likely
+other, equivalent solutions that are simpler.
+
+We will use 0 for the language that contains no strings, and S and T for arbitrary
+regular expressions.  To define sets we use the set builder notation
+
+{ expression :  predicate }
+
+to stand for the set of all values of the expression for values of variables that
+predicate evaluates to true, for example
+
+{ 2*n + 1 : n is in the set of integers }
+
+is all of the odd integers.  We are using the colon instead of the more usual vertical
+bar because it is used in regular expressions.
+
+For n >= 0 we use S^n to stand for the language concatenation power of S.  S^0
+is just the set { "" } (or { epsilon } if you prefer).  S^n for n > 0 is
+
+S X S ... X S
+
+with n occurrences of S.
+
+
+
+ISEMPTY
+
+We return true exactly when the regular expression stands for a the language
+with no strings in it.
+
+
+Base cases
+
+these are straightforward and I will leave them to you.
+
+
+For  |
+
+isEmpty(S|T)
+
+where you have the recursive calls
+
+isEmpty(S)
+isEmpty(T)
+
+| stands for union.  For sets A and B, when is
+A union B empty?
+
+For X
+
+isEmpty(S X T)
+
+where you have
+
+isEmpty(S)
+isEmpty(T)
+
+S X T
+
+stands for answer as calculated by
+
+answer = empty set;
+
+for (String x : S)
+   for (String y : T)
+      answer.add(x + y);
+
+Under what circumstances is answer empty/nonempty?
+
+For *
+
+isEmpty(S*)
+
+where you have
+
+isEmpty(S)
+
+Recall,
+
+S* = union, overall n >= 0, of S^n = S^0 union S^1 union S^2 union ...
+
+
+REVERSED LANGUAGE
+
+If we use rev(s) for the reversal of a string s, as in rev("abc") is "cba", and
+rev(L) to stand for the operation we want to realize on the expressions, then
+for any language L and string s
+
+rev(L) = { rev(s) : s is in L }
+
+Conceptually, we want to define from a regular expression S a regular expression S'
+such that S' represents the set of strings that are the reversals of all the strings
+in S, which we would calculate as
+
+
+answer = empty set;
+for (String s : S)
+   answer = answer union { rev(s) };
+
+doing this recursively on the structure of the regular expressions.
+
+
+For 0
+
+rev(0) = { rev(s) : s in 0 } = ...  what are the strings s in the empty set?
+
+For sigma, note that reversal of a string containing a single letter is just the same
+string.
+
+
+For |
+
+rev(S|T) = { rev(s) : s is in S or s is in T }
+
+How is that related to
+
+rev(S) = { rev(s) : s is in S }
+rev(T) = { rev(s) : s in in T }
+
+
+For X
+
+rev(S X T) = { rev(s) : s is in S X T }
+           = { rev(vw) : v is in S and w is in T } by the definition of X
+
+We allow ourselves
+
+rev(S) = { rev(v) : v is in S }
+rev(T) = { rev(x) : x is in T }
+
+The critical observation is that rev(vw) = rev(w)rev(v), as in Java
+
+rev("catfish") = rev("cat" + "fish")
+               = rev("fish")+ rev("cat")
+               = "hsif" + "tac"
+               = "hsiftac"
+
+For *
+
+S* = Union over all n >= 0  of S^n, where we use S^n to stand for
+S X S X ... X S with n S's.
+
+It is not too difficult to prove by induction that rev(S^n) = (rev(S))^n
+
+If you combine that with your result for |, which is union here,
+and the result for the recursive call, rev(S), you should be able to force
+
+rev(S*) = rev(Union over all n >= 0 of S^n)
+
+to a satisfactory expression.
+
+
+PREFIX LANGUAGE
+
+A string s is a prefix of a string t iff there is some third string u such that
+t is the same as s + u, as in "cat" is a prefix of "catfish" because for "fish"
+"catfish" is the same as "cat" + "fish".  Note that "" (or epsilon in our
+discussion) is the prefix of EVERY string, and every string is a prefix of
+itself.
+
+For the prefix lanaguage of a language L, we want to union all the prefixes
+of the strings in L, so, for example, if L = { "ab", "cde" } we would have
+the set of prefixes of L to be { "", "a", "ab", "c", "cd", "cde" }
+
+Note that always, L is a subset of pref(L), and  for any nonempty L,
+"" is in pref(L).
+
+Of course, we are not directly calculating these from the set of strings,
+but coming up with recursively defined regular expression transformations
+that accomplish the same thing.
+
+Base cases
+
+For 0, if we form  { s : s is the prefix of some t in 0 } what do we get?
+
+For a single letter sigma, the prefixes of sigma are just sigma itself and
+the empty string, no?  How do you represent that set in a regular expression?
+
+For |
+
+pref(S|T) = { s : s is the prefix of some t in S|T }
+
+          = { s : s is the prefix of some t (t is in S or t is in T) }
+
+our recursive calls will give us expressions for
+
+pref(S)
+pref(T)
+
+and they can be used to construct a regular expression for pref(S|T)
+
+For X
+
+pref(S X T) = { s : s is the prefix of some t in S X  T }
+            = { s : s is the prefix of some uv where(u is in S and v is in T) }
+
+our recursive calls give us expressions for
+
+pref(S)
+pref(T)
+
+The critical observation is that for the strings s, u, an v in the
+set definition above, we have exactly three possibilities
+
+s is shorter length than u
+s is exactly the same length as u
+s is longer length than u
+
+If you consider each of those cases you can, for each one, find a
+regular expression that covers it from the regular expressions for
+S, pref(S), T, and pref(T), so you can union the solutions.
+
+
+For *
+
+pref(S*) = { s : s is the prefix of some t in S* }
+
+you will have the recursive call giving you an expression for
+
+pref(S)
+
+The solution adapts the observation from the solution for X above.
+In the definition above, if t is in S*, then either t is "", which
+forces s to be "", or when s is NOT "", there is some n > 0, and strings
+t1, t2, ..., tn, each of which is in S, such that
+
+s is a prefix of t1 t2 ... tn
+
+(or t1 + t2 + ... + tn, if you were using Java notation).
+If s is a nonempty prefix of that string we can ask ourselves, which ti
+holds the LAST letter of s as prefix of the whole string?
+
+Suppose it is t1.  Where does that place s?
+
+Suppose it is ti for some i with  1 < i <= n.  Then s has
+an initial part in S^(i-1) and a leftover part that is in
+what? (draw a picture).
+
+Recall that n is allowed to be any value >= 0 and construct
+the expression for pref(S*) using the expression for S and
+pref(S) and regular operators.
+
+SUFFIX LANGUAGE
+
+This would be a killer except for the observation that
+
+s is a suffix of t iff  rev(s) is a prefix of rev(t)
+
+as in
+
+"fish" is a suffix of "catfish" iff  "hsif" is a prefix of
+"hsiftac"
+
+Using that, you can code this operation in terms of the others,
+like the situation that  x - y = x + (-y) with numbers.
+
+You still need to be careful to perform the method calls in the
+right order.  I am concerned about the amount of recursion this would
+generate, and a better solution will replace this definition with a
+more direct solution.  In fact, a careful examination of the solution
+for prefixLanguage suggests ways to do all cases directly.
