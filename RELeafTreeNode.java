@@ -46,7 +46,7 @@ C ::= :  a | b | c | d | e | f | g | h | i | j | k | l | m | n | o |
 
 White space in the input string will be ignored, so
 
-a   ?   b c 
+a   ?   b c
 
 parses the same way as
 
@@ -56,110 +56,118 @@ This class accommodates all the values of C except the last, unless the S
 in the last ultimately derives a single base letter surrounded by parens.
 
  **********************************************************************************/
-public class RELeafTreeNode extends RETreeNode{
-   
-   private char
-   label; // can be any lower case letter, 0, or .
-   
-   
-   public RELeafTreeNode(char c)throws Exception{
-      
-      if (!RegularExpressionFactory.baseLetters.contains(c))
-         throw new Exception("Invalid character \'" + c + 
-               "\' to RELeafTreeNode constructor.");
-      else
-         label = c;
-   }
-   
-   public char getLabel(){
-      return label;
-   }
-   
-   public boolean isLeaf(){
-      return true;
-   }
-   
-   public String convertToJavaPattern(){
-      
-      switch (label){
-         
-         case  '\\' :
-         case '.' : // represents the symbols in base letters other than 0
-            return RegularExpressionFactory.PATTERN_SET_FOR_BASE_LETTERS;
-            
-         case '[' :
-         case  ']' :
-         case '{' :
-         case '}' :
-         case '(' :
-         case ')' :
-         case '<' :
-         case '>' :
-         case '*' :
-         case '+' :
-         case '-' :
-         case '=' :
-         case '?' :
-         case '^' : 
-         case '$' :
-         case '|' :
-            return "\\" + label;
-         case '0' : // represents the empty set for us;
-            // [] does not see to work for the empty set
-            return "[a-c&&[d-f]]";
-            
-         default:
-            return "" + label;
-      }
-      
-   }
-   
-   public String toString(){
-      
-      return "" + label;
-      
-   }
+public class RELeafTreeNode extends RETreeNode {
+
+    private char label;   // can be any lower case letter, 0, or .
 
 
-   // Stub definitions
-   // YOU MUST CODE THESE
-   // See implementation notes for a discussion.
+    public RELeafTreeNode(char c) throws Exception {
 
-   public boolean isEmpty(){
-       return this.label == '0';
-   }
+        if (!RegularExpressionFactory.baseLetters.contains(c))
+            throw new Exception("Invalid character \'" + c + "\' to RELeafTreeNode constructor.");
+        else
+            label = c;
+    }
+
+    public char getLabel() {
+        return label;
+    }
+
+    public boolean isLeaf() {
+        return true;
+    }
+
+    public String convertToJavaPattern() {
+
+        switch (label) {
+
+            case '\\':
+            case '.':   // represents the symbols in base letters other than 0
+                return RegularExpressionFactory.PATTERN_SET_FOR_BASE_LETTERS;
+
+            case '[':
+            case ']':
+            case '{':
+            case '}':
+            case '(':
+            case ')':
+            case '<':
+            case '>':
+            case '*':
+            case '+':
+            case '-':
+            case '=':
+            case '?':
+            case '^':
+            case '$':
+            case '|':
+                return "\\" + label;
+            case '0':   // represents the empty set for us;
+                // [] does not see to work for the empty set
+                return "[a-c&&[d-f]]";
+
+            default:
+                return "" + label;
+        }
+    }
+
+    public String toString() {
+
+        return "" + label;
+    }
 
 
-   public RETreeNode reversedLanguage() {
+    // Stub definitions
+    // YOU MUST CODE THESE
+    // See implementation notes for a discussion.
 
-      try{return new RELeafTreeNode('0');}catch(Exception e){return null;}
-   }
-
-   public RETreeNode prefixLanguage(){
-
-      try{return new RELeafTreeNode('0');}catch(Exception e){return null;}
-   }
-
-   public RETreeNode suffixLanguage(){
-
-      try{return new RELeafTreeNode('0');}catch(Exception e){return null;}
-   }
+    public boolean isEmpty() {
+        return this.label == '0';
+    }
 
 
-   
-   public static void main(String a[]){
-      
-      RELeafTreeNode x;
-      
-      for (int i = 32; i < 127; i++){
-         try{
-            x = new RELeafTreeNode((char) i);
-            System.out.println("Successfully constructed node with label \'"
-                  + x.getLabel() + '\'');
-         }
-         catch (Exception e){
-            System.out.println(e.getMessage());
-         }
-      }
-   }
+    public RETreeNode reversedLanguage() {
+
+        try {
+            return new RELeafTreeNode(this.label);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public RETreeNode prefixLanguage() {
+
+        try {
+            RETreeNode toReturn = new REUopTreeNode('?', new RELeafTreeNode(this.label));
+            return toReturn;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public RETreeNode suffixLanguage() {
+
+        try {
+            return new RELeafTreeNode('0');
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+
+    public static void main(String a[]) {
+
+        RELeafTreeNode x;
+
+        for (int i = 32; i < 127; i++) {
+            try {
+                x = new RELeafTreeNode((char)i);
+                System.out.println(
+                    "Successfully constructed node with label \'" + x.getLabel() + '\'');
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
 }
