@@ -160,10 +160,12 @@ public class REBopTreeNode extends RETreeNode {
 
         try {
             if (this.operator == 'X') {
-                RETreeNode temp = new REBopTreeNode('X', this.right.reversedLanguage(), this.left.reversedLanguage());
+                RETreeNode temp = new REBopTreeNode(
+                    'X', this.right.reversedLanguage(), this.left.reversedLanguage());
                 return temp;
-            } else { // | operator
-                RETreeNode temp = new REBopTreeNode('|', this.left.reversedLanguage(), this.right.reversedLanguage());
+            } else {   // | operator
+                RETreeNode temp = new REBopTreeNode(
+                    '|', this.left.reversedLanguage(), this.right.reversedLanguage());
                 return temp;
             }
         } catch (Exception e) {
@@ -174,7 +176,16 @@ public class REBopTreeNode extends RETreeNode {
     public RETreeNode prefixLanguage() {
 
         try {
-            return new RELeafTreeNode('0');
+            if (this.getOperator() == 'X') {
+                RETreeNode newRight =
+                    new REBopTreeNode('X', this.left, this.right.prefixLanguage());
+                RETreeNode toReturn = new REBopTreeNode('|', this.right.prefixLanguage(), newRight);
+                return toReturn;
+            } else {   // this.getOperator() == '|'
+                RETreeNode toReturn =
+                    new REBopTreeNode('|', this.left.prefixLanguage(), this.right.prefixLanguage());
+                return toReturn;
+            }
         } catch (Exception e) {
             return null;
         }
@@ -183,7 +194,15 @@ public class REBopTreeNode extends RETreeNode {
     public RETreeNode suffixLanguage() {
 
         try {
-            return new RELeafTreeNode('0');
+            if (this.getOperator() == 'X') {
+                RETreeNode newLeft = new REBopTreeNode('X', this.left.suffixLanguage(), this.right);
+                RETreeNode toReturn = new REBopTreeNode('|', newLeft, this.right.suffixLanguage());
+                return toReturn;
+            } else {   // this.getOperator() == '|'
+                RETreeNode toReturn =
+                    new REBopTreeNode('|', this.left.suffixLanguage(), this.right.suffixLanguage());
+                return toReturn;
+            }
         } catch (Exception e) {
             return null;
         }

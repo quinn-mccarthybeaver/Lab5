@@ -48,7 +48,7 @@ C ::= :  a | b | c | d | e | f | g | h | i | j | k | l | m | n | o |
 
 White space in the input string will be ignored, so
 
-a   ?   b c 
+a   ?   b c
 
 parses the same way as
 
@@ -56,80 +56,72 @@ a?bc
 
  *********************************************************************************/
 
-public class RegularExpression{
-   
-   
-   private RETreeNode
-   root;
-   
-   public RegularExpression(RETreeNode nd)throws Exception{
-      if (nd == null)
-         throw new Exception("null passed as root to RegularExpression constructor.");
-      else
-         root = nd;
-   }
-   
-   public String convertToJavaPattern() {
-      return root.convertToJavaPattern();
-   }
-   public String toString(){
-      return root.toString();
-   }
-   
-   public RETreeNode getRoot(){
-      return root;
-   }
+public class RegularExpression {
 
 
-   // these definitions will work if you recursive definitions are correct
-   public RegularExpression reversedLanguage() {
+    private RETreeNode root;
 
-      try{
+    public RegularExpression(RETreeNode nd) throws Exception {
+        if (nd == null)
+            throw new Exception("null passed as root to RegularExpression constructor.");
+        else
+            root = nd;
+    }
 
-         RETreeNode temp = null;
-         temp = root.reversedLanguage();
+    public String convertToJavaPattern() {
+        return root.convertToJavaPattern();
+    }
+    public String toString() {
+        return root.toString();
+    }
 
-         return new RegularExpression(temp);
-      }
-      catch(Exception e){
-         return null;
-      }
-   }
-
-   public RegularExpression prefixLanguage(){
-
-      try{
-
-         RETreeNode temp = null;
-         temp = root.prefixLanguage();
-
-         return new RegularExpression(temp);
-      }
-      catch(Exception e){
-         return null;
-      }
-
-   }
-
-   public RegularExpression suffixLanguage(){
-
-      try{
-
-         RETreeNode temp = null;
-         temp = root.suffixLanguage();
-
-         return new RegularExpression(temp);
-      }
-      catch(Exception e){
-         return null;
-      }
-
-   }
-
-   public boolean isEmpty(){
-
-      return root.isEmpty();
-   }
+    public RETreeNode getRoot() {
+        return root;
+    }
 
 
+    // these definitions will work if you recursive definitions are correct
+    public RegularExpression reversedLanguage() {
+
+        try {
+
+            RETreeNode temp = null;
+            temp            = root.reversedLanguage();
+
+            return new RegularExpression(temp);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public RegularExpression prefixLanguage() {
+
+        try {
+
+            RETreeNode temp = null;
+            temp            = root.prefixLanguage();
+
+            return new RegularExpression(temp);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public RegularExpression suffixLanguage() {
+
+        try {
+
+            RETreeNode temp = null;
+            temp            = root.suffixLanguage();
+
+            return new RegularExpression(temp);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public boolean isEmpty() {
+
+        return root.isEmpty();
+    }
 }

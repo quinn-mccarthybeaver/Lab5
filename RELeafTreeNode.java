@@ -148,7 +148,8 @@ public class RELeafTreeNode extends RETreeNode {
     public RETreeNode suffixLanguage() {
 
         try {
-            return new RELeafTreeNode('0');
+            RETreeNode toReturn = new REUopTreeNode('?', new RELeafTreeNode(this.label));
+            return toReturn;
         } catch (Exception e) {
             return null;
         }

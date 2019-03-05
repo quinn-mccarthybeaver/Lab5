@@ -144,7 +144,16 @@ public class REUopTreeNode extends RETreeNode {
     public RETreeNode prefixLanguage() {
 
         try {
-            return new RELeafTreeNode('0');
+            if (this.getOperator() == '+') {
+                RETreeNode toReturn = new REUopTreeNode('+', this.sub.prefixLanguage());
+                return toReturn;
+            } else if (this.getOperator() == '?') {
+                RETreeNode toReturn = new REUopTreeNode('?', this.sub.prefixLanguage());
+                return toReturn;
+            } else {   // this.getOperator() == '*'
+                RETreeNode toReturn = new REUopTreeNode('*', this.sub.prefixLanguage());
+                return toReturn;
+            }
         } catch (Exception e) {
             return null;
         }
@@ -153,7 +162,16 @@ public class REUopTreeNode extends RETreeNode {
     public RETreeNode suffixLanguage() {
 
         try {
-            return new RELeafTreeNode('0');
+            if (this.getOperator() == '+') {
+                RETreeNode toReturn = new REUopTreeNode('+', this.sub.suffixLanguage());
+                return toReturn;
+            } else if (this.getOperator() == '?') {
+                RETreeNode toReturn = new REUopTreeNode('?', this.sub.suffixLanguage());
+                return toReturn;
+            } else {   // this.getOperator() == '*'
+                RETreeNode toReturn = new REUopTreeNode('*', this.sub.suffixLanguage());
+                return toReturn;
+            }
         } catch (Exception e) {
             return null;
         }
